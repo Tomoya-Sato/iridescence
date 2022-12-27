@@ -35,9 +35,12 @@ int main(int argc, char** argv) {
   float alpha = 1.0;
   bool dynamic_rendering = false;
   float scale = 1.0;
+  bool look_at = true;
 
   viewer->register_ui_callback("cloud_loader", [&]() {
     ImGui::Checkbox("Dynamic Rendering", &dynamic_rendering);
+    ImGui::Checkbox("LookAt when right click", &look_at);
+
     if(ImGui::Button("load")) {
       std::vector<std::string> results = pfd::open_file("choose PCD file").result();
       if(!results.empty()) {
@@ -55,9 +58,12 @@ int main(int argc, char** argv) {
           intensity_vec[i] = cloud->points[i].intensity;
         }
 
+        Eigen::Vector3f lookat_pos(xyz_cloud->points[0].x, xyz_cloud->points[0].y, xyz_cloud->points[0].z);
+
         cloud_buffer = glk::create_point_cloud_buffer(*xyz_cloud);
         cloud_buffer->add_color(getColorVec(intensity_vec, intensity_range, alpha)[0].data(), sizeof(Eigen::Vector4f), cloud->size());
         viewer->update_drawable(results[0], cloud_buffer, guik::VertexColor().add("point_scale", scale));
+        viewer->lookat(lookat_pos);
 
         // *** example usage ***
         // construct PointCloudBuffer from raw float pointer
@@ -153,6 +159,7 @@ int main(int argc, char** argv) {
       float depth = viewer->pick_depth(Eigen::Vector2i(mouse_pos.x, mouse_pos.y));
       Eigen::Vector3f pos = viewer->unproject(Eigen::Vector2i(mouse_pos.x, mouse_pos.y), depth);
       std::cout << "depth: " << depth << ", pos: " << pos.transpose() << std::endl;
+      viewer->lookat(pos);
     }
   });
 
