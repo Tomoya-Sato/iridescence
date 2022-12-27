@@ -64,7 +64,9 @@ int main(int argc, char** argv) {
     }
     ImGui::End();
 
-    viewer->update_drawable("my_coord", glk::Primitives::coordinate_system(), guik::VertexColor(my_transform));
+    static int cnt = 0;
+    viewer->update_drawable("my_coord" + std::to_string(cnt), glk::Primitives::coordinate_system(), guik::VertexColor(my_transform));
+    cnt++;
   });
 
   // create sub viewer

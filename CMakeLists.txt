@@ -23,7 +23,7 @@ endif()
 find_package(GLM REQUIRED)
 find_package(OpenGL REQUIRED)
 
-# find_package(PCL)
+find_package(PCL)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -182,6 +182,7 @@ endif()
 
 # build examples
 if(BUILD_EXAMPLES)
+# if(TRUE)
   file(GLOB example_sources "src/example/*.cpp")
 
   foreach(example_src IN LISTS example_sources)
@@ -199,6 +200,16 @@ if(BUILD_EXAMPLES)
     target_link_libraries(${example_name}
       iridescence
     )
+
+    if(${example_name} STREQUAL "ext_light_viewer_pointcloud" OR ${example_name} STREQUAL "ext_light_viewer_kitti")
+      target_include_directories(${example_name} PUBLIC
+        include
+        ${PCL_INCLUDE_DIRS}
+      )
+      target_link_libraries(${example_name}
+        ${PCL_LIBRARIES}
+      )
+    endif()
   endforeach()
 endif()
 
